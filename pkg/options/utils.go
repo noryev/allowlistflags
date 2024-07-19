@@ -1,6 +1,7 @@
 package options
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -46,9 +47,12 @@ func GetDefaultServeOptionInt(envName string, defaultValue int) int {
 	return defaultValue
 }
 
+// use the helper function here for allowlist
+
 func GetDefaultServeOptionBool(envName string, defaultValue bool) bool {
 	envValue := os.Getenv(envName)
 	if envValue != "" {
+		fmt.Printf(" %s envValue: %s\n", envName, envValue)
 		i, err := strconv.ParseBool(envValue)
 		if err == nil {
 			return i

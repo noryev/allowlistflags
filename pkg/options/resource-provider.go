@@ -51,9 +51,10 @@ func GetDefaultResourceProviderOfferOptions() resourceprovider.ResourceProviderO
 		DefaultPricing:  GetDefaultPricingOptions(),
 		DefaultTimeouts: GetDefaultTimeoutOptions(),
 		// allows an RP to list specific prices for each module
-		ModulePricing:  map[string]data.DealPricing{},
-		ModuleTimeouts: map[string]data.DealTimeouts{},
-		Services:       GetDefaultServicesOptions(),
+		ModulePricing:   map[string]data.DealPricing{},
+		ModuleTimeouts:  map[string]data.DealTimeouts{},
+		Services:        GetDefaultServicesOptions(),
+		EnableAllowlist: GetDefaultServeOptionBool("ENABLE_ALLOWLIST", false),
 	}
 }
 
@@ -78,10 +79,15 @@ func AddResourceProviderOfferCliFlags(cmd *cobra.Command, offerOptions *resource
 		&offerOptions.Modules, "offer-modules", offerOptions.Modules,
 		`The modules you are willing to run (OFFER_MODULES).`,
 	)
+	cmd.PersistentFlags().BoolVar(
+		&offerOptions.EnableAllowlist, "enable-allowlist", offerOptions.EnableAllowlist,
+		`Enable allowlist for job creation (ENABLE_ALLOWLIST).`,
+	)
 	AddPricingModeCliFlags(cmd, &offerOptions.Mode)
 	AddPricingCliFlags(cmd, &offerOptions.DefaultPricing)
 	AddTimeoutCliFlags(cmd, &offerOptions.DefaultTimeouts)
 	AddServicesCliFlags(cmd, &offerOptions.Services)
+	fmt.Printf("\nwhile adding RP Flags: %+v\n", offerOptions)
 }
 
 func AddResourceProviderPowCliFlags(cmd *cobra.Command, options *resourceprovider.ResourceProviderPowOptions) {
@@ -109,15 +115,27 @@ func AddResourceProviderPowCliFlags(cmd *cobra.Command, options *resourceprovide
 
 }
 
+/*
+	func AddResourceProviderAllowlistCliFlags(cmd *cobra.Command, options *resourceprovider.ResourceProviderAllowlistOptions) {
+		cmd.PersistentFlags().StringVar(
+			&options.AllowlistPath, "allowlist-path", options.AllowlistPath,
+			`The path to the allowlist file (ALLOWLIST_PATH).`,
+		)
+	}
+*/
 func AddResourceProviderCliFlags(cmd *cobra.Command, options *resourceprovider.ResourceProviderOptions) {
 	AddBacalhauCliFlags(cmd, &options.Bacalhau)
 	AddWeb3CliFlags(cmd, &options.Web3)
 	AddResourceProviderOfferCliFlags(cmd, &options.Offers)
 	AddResourceProviderPowCliFlags(cmd, &options.Pow)
+	// AddResourceProviderAllowlistCliFlags(cmd, &options.Allowlist)
 }
 
 func AddPowSignalCliFlags(cmd *cobra.Command, options *PowSignalOptions) {
 	AddWeb3CliFlags(cmd, &options.Web3)
+}
+
+func AddResourceProviderAllowlistCliFlags(cmd *cobra.Command, options *resourceprovider.ResourceProviderOptions) {
 }
 
 func CheckResourceProviderOfferOptions(options resourceprovider.ResourceProviderOfferOptions) error {
@@ -164,6 +182,8 @@ func CheckResourceProviderOptions(options resourceprovider.ResourceProviderOptio
 	return nil
 }
 
+//
+
 func ProcessResourceProviderOfferOptions(options resourceprovider.ResourceProviderOfferOptions, network string) (resourceprovider.ResourceProviderOfferOptions, error) {
 	newServicesOptions, err := ProcessServicesOptions(options.Services, network)
 	if err != nil {
@@ -182,7 +202,9 @@ func ProcessResourceProviderOfferOptions(options resourceprovider.ResourceProvid
 }
 
 func ProcessResourceProviderOptions(options resourceprovider.ResourceProviderOptions, network string) (resourceprovider.ResourceProviderOptions, error) {
+	fmt.Printf("\nUnprocessed RP Options!%+v\n\n", options)
 	newOfferOptions, err := ProcessResourceProviderOfferOptions(options.Offers, network)
+	fmt.Printf("Processed RP Options!%+v\n\n", newOfferOptions)
 	if err != nil {
 		return options, err
 	}

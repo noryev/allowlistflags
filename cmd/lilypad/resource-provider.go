@@ -1,6 +1,8 @@
 package lilypad
 
 import (
+	"fmt"
+
 	"github.com/lilypad-tech/lilypad/pkg/executor/bacalhau"
 	optionsfactory "github.com/lilypad-tech/lilypad/pkg/options"
 	"github.com/lilypad-tech/lilypad/pkg/resourceprovider"
@@ -20,6 +22,8 @@ func newResourceProviderCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			optionsfactory.CheckDeprecation(options.Offers.Services, options.Web3)
 
+			fmt.Printf("options: %+v", options)
+
 			network, _ := cmd.Flags().GetString("network")
 			options, err := optionsfactory.ProcessResourceProviderOptions(options, network)
 			if err != nil {
@@ -32,6 +36,7 @@ func newResourceProviderCmd() *cobra.Command {
 	optionsfactory.AddResourceProviderCliFlags(resourceProviderCmd, &options)
 
 	return resourceProviderCmd
+
 }
 
 func runResourceProvider(cmd *cobra.Command, options resourceprovider.ResourceProviderOptions) error {

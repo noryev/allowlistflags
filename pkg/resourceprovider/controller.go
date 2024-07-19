@@ -49,6 +49,12 @@ func NewResourceProviderController(
 		return nil, err
 	}
 
+	//options.Offers.EnableAllowlist
+
+	fmt.Printf("*** enable allowlist ***; %v \n", options.Offers.EnableAllowlist)
+
+	fmt.Printf("*** Disable POW ***; %v \n", options.Pow.DisablePow)
+
 	solverClient, err := solver.NewSolverClient(
 		http.ClientOptions{
 			URL:           solverUrl,

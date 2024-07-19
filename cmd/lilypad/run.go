@@ -21,6 +21,7 @@ import (
 
 func newRunCmd() *cobra.Command {
 	options := optionsfactory.NewJobCreatorOptions()
+
 	runCmd := &cobra.Command{
 		Use:     "run",
 		Short:   "Run a job on the Lilypad network.",
@@ -30,15 +31,24 @@ func newRunCmd() *cobra.Command {
 			optionsfactory.CheckDeprecation(options.Offer.Services, options.Web3)
 
 			network, _ := cmd.Flags().GetString("network")
+			//	allowlist, _ := cmd.Flags().GetBool("enable-allowlist")
+
 			options, err := optionsfactory.ProcessJobCreatorOptions(options, args, network)
 			if err != nil {
 				return err
 			}
+
+			/*	options, err = optionsfactory.AllowlistOptions(options, args, allowlist)
+				if err != nil {
+					return err
+				}
+			*/
 			return runJob(cmd, options)
 		},
 	}
 
-	optionsfactory.AddJobCreatorCliFlags(runCmd, &options)
+	//optionsfactory.AddJobCreatorCliFlags(runCmd, &options)
+	//runCmd.Flags().Bool("enable-allowlist", false, "Enable allowlist for job creation") // Adding the allowlist flag
 
 	return runCmd
 }

@@ -52,6 +52,8 @@ type ResourceProviderOfferOptions struct {
 
 	// which mediators and directories this RP will trust
 	Services data.ServiceConfig
+
+	EnableAllowlist bool
 }
 
 // this configures the pow we will keep track of
@@ -174,4 +176,8 @@ func TriggerNewPowRound(ctx context.Context, web3SDK *web3.Web3SDK) (common.Hash
 		return tx.Hash(), fmt.Errorf("trigger new pow round")
 	}
 	return tx.Hash(), nil
+}
+
+func AllowlistCmd(allowlistCmd bool) {
+	log.Info().Msgf("Allowlist toggled successfully.")
 }
